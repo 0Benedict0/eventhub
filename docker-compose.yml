@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: eventhub
+      POSTGRES_USER: eventhub
+      POSTGRES_PASSWORD: eventhub
+    ports:
+      - "5432:5432"
+    volumes:
+      - eventhub_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eventhub"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      DB_HOST: postgres
+      DB_NAME: eventhub
+      DB_USER: eventhub
+      DB_PASSWORD: eventhub
+      REDIS_HOST: redis
+      JWT_SECRET: super-secret-key-change-in-production-min-32-chars
+    ports:
+      - "8080:8080"
+    volumes:
+      - eventhub_uploads:/app/uploads
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+volumes:
+  eventhub_pg_data:
+  eventhub_uploads:

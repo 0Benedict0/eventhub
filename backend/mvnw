@@ -1,0 +1,6 @@
+#!/bin/sh
+# Maven Wrapper stub.
+# Generate the real wrapper before first use:
+#   mvn -N io.takari:maven:wrapper -Dmaven=3.9.9
+echo "Run 'mvn -N io.takari:maven:wrapper -Dmaven=3.9.9' to generate the real Maven Wrapper, then re-run ./mvnw"
+exit 1
